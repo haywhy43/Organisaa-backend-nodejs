@@ -1,10 +1,20 @@
 import express from "express";
-require("dotenv").config();
+import config from "./config";
+import initializeDb from "./db";
+import api from "./routes";
 
 const app = express();
 
-const port = process.env.PORT;
+(async () => {
+  try {
+    await initializeDb((db) => {
+      app.use("/", api({ config, db }));
+    });
+  } catch (e: any) {
+    throw new Error(e);
+  }
+})();
 
-app.listen(port, () => {
-  console.log("I am running on port " + port);
+app.listen(config.PORT, () => {
+  console.log("I am running on port " + config.PORT);
 });
